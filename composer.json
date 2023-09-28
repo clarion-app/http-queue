@@ -1,0 +1,27 @@
+{
+    "name": "clarion-app/http-queue",
+    "description": "Job queue for HTTP requests",
+    "type": "library",
+    "require": {
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ClarionApp\\HttpQueue\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tim Schwartz",
+            "email": "tim@metaverse.systems"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ClarionApp\\HttpQueue\\HttpQueueServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}
