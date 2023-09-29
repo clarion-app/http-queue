@@ -30,46 +30,29 @@ class SendHttpRequest implements ShouldQueue
     public function handle()
     {
         $start_time = time();
-        switch(strtolower($this->request->method)) {
+        $response = Http::timeout($this->request->http_timeout);
+        if(count($this->request->headers))
+        {
+            $response = $response->withHeaders($this->request->headers);
+        }
+
+        switch(strtolower($this->request->method))
+        {
             case 'post':
-                $response = Http::timeout($this->request->http_timeout);
-                if(count($this->request->headers))
-                {
-                    $response = $response->withHeaders($this->request->headers);
-                }
                 $response = $response->post($this->request->url, $this->request->body);
                 break;
             case 'put':
-                $response = Http::timeout($this->request->http_timeout);
-                if(count($this->request->headers))
-                {
-                    $response = $response->withHeaders($this->request->headers);
-                }
                 $response = $response->put($this->request->url, $this->request->body);
                 break;
             case 'patch':
-                $response = Http::timeout($this->request->http_timeout);
-                if(count($this->request->headers))
-                {
-                    $response = $response->withHeaders($this->request->headers);
-                }
                 $response = $response->patch($this->request->url, $this->request->body);
                 break;
             case 'delete':
-                $response = Http::timeout($this->request->http_timeout);
-                if(count($this->request->headers))
-                {
-                    $response = $response->withHeaders($this->request->headers);
-                }
                 $response = $response->delete($this->request->url, $this->request->body);
                 break;
             default:
-                $response = Http::timeout($this->request->http_timeout);
-                if(count($this->request->headers))
-                {
-                    $response = $response->withHeaders($this->request->headers);
-                }
                 $response = $response->get($this->request->url);
+                break;
         }
 
         $stop_time = time();
