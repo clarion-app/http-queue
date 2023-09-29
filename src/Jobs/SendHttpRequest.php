@@ -9,7 +9,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use ClarionApp\HttpQueue\HttpRequest;
-use ClarionApp\HttpQueue\HandleHttpResponse;
 
 class SendHttpRequest implements ShouldQueue
 {
@@ -58,7 +57,7 @@ class SendHttpRequest implements ShouldQueue
 
         $stop_time = time();
 
-        $callback_name = "HandleHttpResponse";
+        $callback_name = "ClarionApp\HttpQueue\HandleHttpResponse";
         if($this->callback) $callback_name = $this->callback;
 
         $c = new ($callback_name)();
