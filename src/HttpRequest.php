@@ -8,5 +8,5 @@ class HttpRequest
     public $method;
     public array $headers;
     public $body;
-    public $http_timeout = 900;
+    public $http_timeout = 0;
 }
