@@ -77,7 +77,7 @@ class SendHttpStreamRequest implements ShouldQueue
 
             $promise->wait();
 
-            $this->callback->finish($this->data);
+            $this->callback->finish($this->data, time() - $this->start_time);
         }
         catch(RuntimeException $e)
         {

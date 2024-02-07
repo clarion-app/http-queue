@@ -15,7 +15,7 @@ class HandleHttpStreamResponse extends HandleHttpResponse
         $this->buffer .= $content;
     }
 
-    public function finish($reference)
+    public function finish($reference, $seconds)
     {
     }
 }
