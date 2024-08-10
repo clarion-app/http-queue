@@ -24,9 +24,9 @@ class SendHttpStreamRequest implements ShouldQueue
     protected $data;
     protected $start_time;
 
-    public function __construct(HttpRequest $request, $callback_name = null, $data = null)
+    public function __construct(HttpRequest $request, $callback_name = null, $data = null, $queue = 'http')
     {
-        $this->onQueue('http');
+        $this->onQueue($queue);
 
         $this->request = $request;
         $this->callback_name = $callback_name;
