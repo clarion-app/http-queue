@@ -70,7 +70,7 @@ class SendHttpStreamRequest implements ShouldQueue
                         $this->callback->handle($content, $this->data, time() - $this->start_time);
                     }
                 },
-                function(RequestException $e) {
+                function(\Throwable $e) {
                     \Log::error($e->getMessage());
                 }
             );
