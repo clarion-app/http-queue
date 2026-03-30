@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use ClarionApp\HttpQueue\HttpRequest;
+use ClarionApp\HttpQueue\HandleHttpResponse;
 
 class SendHttpRequest implements ShouldQueue
 {
@@ -57,8 +58,16 @@ class SendHttpRequest implements ShouldQueue
 
         $stop_time = time();
 
-        $callback_name = "ClarionApp\HttpQueue\HandleHttpResponse";
+        $callback_name = HandleHttpResponse::class;
         if($this->callback) $callback_name = $this->callback;
+
+        if (!class_exists($callback_name)) {
+            throw new \InvalidArgumentException("Callback class '{$callback_name}' does not exist.");
+        }
+
+        if ($callback_name !== HandleHttpResponse::class && !is_subclass_of($callback_name, HandleHttpResponse::class, true)) {
+            throw new \InvalidArgumentException("Callback class '{$callback_name}' must be a subclass of HandleHttpResponse.");
+        }
 
         $c = new ($callback_name)();
         $c->handle($response, $this->data, $stop_time - $start_time);

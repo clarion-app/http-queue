@@ -13,6 +13,7 @@ use GuzzleHttp\RequestOptions;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use ClarionApp\HttpQueue\HttpRequest;
+use ClarionApp\HttpQueue\HandleHttpStreamResponse;
 
 class SendHttpStreamRequest implements ShouldQueue
 {
@@ -39,8 +40,16 @@ class SendHttpStreamRequest implements ShouldQueue
         $client = new Client(['timeout'=>$this->request->http_timeout]);
         $request = new Request($this->request->method, $this->request->url, $this->request->headers, json_encode($this->request->body));
 
-        $callback_name = "ClarionApp\HttpQueue\HandleHttpStreamResponse";
+        $callback_name = HandleHttpStreamResponse::class;
         if($this->callback_name) $callback_name = $this->callback_name;
+
+        if (!class_exists($callback_name)) {
+            throw new \InvalidArgumentException("Callback class '{$callback_name}' does not exist.");
+        }
+
+        if ($callback_name !== HandleHttpStreamResponse::class && !is_subclass_of($callback_name, HandleHttpStreamResponse::class, true)) {
+            throw new \InvalidArgumentException("Callback class '{$callback_name}' must be a subclass of HandleHttpStreamResponse.");
+        }
 
         try
         {
@@ -57,13 +66,13 @@ class SendHttpStreamRequest implements ShouldQueue
                         {
                             $content = $stream->read(512);
                         }
-                        catch(RuntimeException $e)
+                        catch(\RuntimeException $e)
                         {   
                             \Log::error($e->getMessage());
                             if($this->request->retries > 0)
                             {
                                 $this->request->retries--;
-                                Log::info("Retrying SendHttpStreamRequest. ".$this->request->retries." retries remaining.");
+                                \Log::info("Retrying SendHttpStreamRequest. ".$this->request->retries." retries remaining.");
                                 SendHttpStreamRequest::dispatch($this->request, $this->callback_name, $this->data);
                             }
                         }
@@ -79,13 +88,13 @@ class SendHttpStreamRequest implements ShouldQueue
 
             $this->callback->finish($this->data, time() - $this->start_time);
         }
-        catch(RuntimeException $e)
+        catch(\RuntimeException $e)
         {
             \Log::error($e->getMessage());
             if($this->request->retries > 0)
             {
                 $this->request->retries--;
-                Log::info("Retrying SendHttpStreamRequest. ".$this->request->retries." retries remaining.");
+                \Log::info("Retrying SendHttpStreamRequest. ".$this->request->retries." retries remaining.");
                 SendHttpStreamRequest::dispatch($this->request, $this->callback_name, $this->data);
             }
         }

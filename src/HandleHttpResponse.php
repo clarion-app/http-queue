@@ -7,6 +7,8 @@ class HandleHttpResponse
 {
     public function handle(Response $response, $data, $seconds)
     {
-        \Log::info(print_r($response->body(), 1));
+        $body = $response->body();
+        $truncated = strlen($body) > 200 ? substr($body, 0, 200) . '...' : $body;
+        \Log::info("HTTP {$response->status()}: {$truncated}");
     }
 }
