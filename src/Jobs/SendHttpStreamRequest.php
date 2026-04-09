@@ -81,6 +81,13 @@ class SendHttpStreamRequest implements ShouldQueue
                 },
                 function(\Throwable $e) {
                     \Log::error($e->getMessage());
+                    if ($e instanceof RequestException && $e->hasResponse()) {
+                        $responseBody = (string) $e->getResponse()->getBody();
+                        \Log::error('SendHttpStreamRequest: API error response body', [
+                            'status' => $e->getResponse()->getStatusCode(),
+                            'body' => $responseBody,
+                        ]);
+                    }
                 }
             );
 
